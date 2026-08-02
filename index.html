@@ -1,1 +1,613 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>root@arsenal:~# ciberseguridad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #05070a;
+  --panel: #0d1219;
+  --panel-2: #10161f;
+  --border: #1c2530;
+  --border-soft: #161d27;
+  --text: #dbe4ec;
+  --text-dim: #7a8896;
+  --text-faint: #4a5764;
+  --blue: #2a9df4;
+  --blue-dim: #1a5a8a;
+  --red: #ff4655;
+  --red-dim: #7a2530;
+  --green: #35d68a;
+  --green-dim: #1a6b47;
+  --amber: #ffb454;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(42,157,244,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,157,244,0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  pointer-events:none;
+  z-index:0;
+}
+::selection{background:var(--blue);color:#000;}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:0;}
+::-webkit-scrollbar-thumb:hover{background:var(--blue-dim);}
+
+a{color:inherit;}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  background:rgba(5,7,10,0.85);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+  padding:14px 36px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:0.5px;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-brand .dot{width:9px;height:9px;background:var(--blue);border-radius:50%;box-shadow:0 0 10px var(--blue);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.nav-links{display:flex;gap:28px;font-family:var(--mono);font-size:12.5px;color:var(--text-dim);}
+.nav-links a{text-decoration:none;transition:color .2s;position:relative;}
+.nav-links a:hover{color:var(--blue);}
+.nav-links a::before{content:'./';color:var(--text-faint);}
+@media(max-width:760px){.nav-links{display:none;}}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:120px 24px 80px;
+  z-index:1;
+}
+.hero-glow{
+  position:absolute;
+  top:10%;left:50%;
+  transform:translateX(-50%);
+  width:900px;height:500px;
+  background:radial-gradient(ellipse, rgba(42,157,244,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.terminal{
+  width:100%;
+  max-width:720px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  box-shadow:0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(42,157,244,0.05);
+  position:relative;
+  z-index:2;
+}
+.terminal-bar{
+  background:var(--panel-2);
+  border-bottom:1px solid var(--border);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.terminal-bar .tb-dot{width:11px;height:11px;border-radius:50%;}
+.tb-dot.r{background:#ff5f57;}
+.tb-dot.y{background:#febc2e;}
+.tb-dot.g{background:#28c840;}
+.terminal-bar .tb-title{
+  margin-left:10px;
+  font-family:var(--mono);
+  font-size:11.5px;
+  color:var(--text-faint);
+}
+.terminal-body{
+  padding:26px 24px 30px;
+  font-family:var(--mono);
+  font-size:13.5px;
+  min-height:220px;
+}
+.terminal-body .line{color:var(--text-dim);margin-bottom:6px;}
+.terminal-body .prompt{color:var(--green);}
+.terminal-body .path{color:var(--blue);}
+.terminal-body .out{color:var(--text);}
+.terminal-body .cursor{
+  display:inline-block;width:8px;height:15px;background:var(--blue);
+  animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px;
+}
+@keyframes blink{50%{opacity:0;}}
+#typed-line{white-space:pre-wrap;}
+
+.hero-title{
+  font-family:var(--mono);
+  font-weight:800;
+  font-size:clamp(30px, 6vw, 58px);
+  text-align:center;
+  margin-top:44px;
+  letter-spacing:-1px;
+  line-height:1.15;
+}
+.hero-title .accent{color:var(--blue);text-shadow:0 0 30px rgba(42,157,244,0.5);}
+.hero-sub{
+  margin-top:18px;
+  max-width:600px;
+  text-align:center;
+  color:var(--text-dim);
+  font-size:16px;
+}
+.hero-tags{
+  margin-top:30px;
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+}
+.tag{
+  font-family:var(--mono);
+  font-size:11.5px;
+  padding:6px 12px;
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  background:var(--panel);
+}
+.tag.red{border-color:var(--red-dim);color:var(--red);}
+.tag.green{border-color:var(--green-dim);color:var(--green);}
+
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:11px;color:var(--text-faint);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.scroll-hint .chevron{animation:down 1.6s infinite;}
+@keyframes down{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(6px);opacity:1;}}
+
+/* ---------- SECTION HEADERS ---------- */
+.section{
+  position:relative;z-index:1;
+  padding:100px 24px;
+  max-width:1180px;
+  margin:0 auto;
+}
+.section-head{
+  margin-bottom:56px;
+}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--blue);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;
+}
+.eyebrow::before{content:'#';color:var(--text-faint);}
+.section-title{
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:clamp(24px,3.4vw,36px);
+  letter-spacing:-0.5px;
+}
+.section-desc{
+  margin-top:14px;
+  color:var(--text-dim);
+  max-width:640px;
+  font-size:15.5px;
+}
+
+/* ---------- FILTER BAR ---------- */
+.filter-bar{
+  display:flex;gap:10px;flex-wrap:wrap;
+  margin-bottom:40px;
+  font-family:var(--mono);
+  font-size:12.5px;
+}
+.filter-btn{
+  padding:9px 16px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text-dim);
+  cursor:pointer;
+  transition:all .18s;
+}
+.filter-btn:hover{border-color:var(--blue-dim);color:var(--text);}
+.filter-btn.active{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#04121e;
+  font-weight:700;
+}
+
+/* ---------- ATTACK GRID ---------- */
+.attack-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(340px,1fr));
+  gap:22px;
+}
+.attack-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  transition:border-color .25s, transform .25s;
+  display:flex;flex-direction:column;
+}
+.attack-card:hover{border-color:var(--blue-dim);transform:translateY(-3px);}
+.card-head{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border-soft);
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;
+}
+.card-title-wrap{display:flex;align-items:center;gap:12px;}
+.card-icon{
+  width:38px;height:38px;
+  border:1px solid var(--red-dim);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--red);
+  flex-shrink:0;
+  font-size:17px;
+}
+.card-title{font-family:var(--mono);font-weight:700;font-size:15.5px;}
+.severity{
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;
+  padding:4px 8px;white-space:nowrap;height:fit-content;
+  text-transform:uppercase;
+}
+.severity.critica{background:rgba(255,70,85,0.1);color:var(--red);border:1px solid var(--red-dim);}
+.severity.alta{background:rgba(255,180,84,0.1);color:var(--amber);border:1px solid #7a5a2a;}
+.severity.media{background:rgba(42,157,244,0.1);color:var(--blue);border:1px solid var(--blue-dim);}
+
+.card-block{padding:18px 20px;}
+.card-block + .card-block{border-top:1px solid var(--border-soft);}
+.block-label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:9px;
+  display:flex;align-items:center;gap:8px;
+}
+.block-label.atk{color:var(--red);}
+.block-label.def{color:var(--green);}
+.block-label .bar{width:14px;height:1px;background:currentColor;}
+.card-text{font-size:14px;color:var(--text-dim);}
+.card-text b{color:var(--text);font-weight:600;}
+.def-list{list-style:none;margin-top:8px;}
+.def-list li{
+  font-size:13.5px;color:var(--text-dim);
+  padding-left:16px;position:relative;margin-bottom:6px;
+}
+.def-list li::before{
+  content:'›';position:absolute;left:0;color:var(--green);font-weight:700;
+}
+
+/* ---------- REFERENCE TABLE ---------- */
+.ref-wrap{
+  border:1px solid var(--border);
+  overflow-x:auto;
+}
+table{
+  width:100%;border-collapse:collapse;
+  font-family:var(--mono);font-size:13px;
+  min-width:680px;
+}
+thead th{
+  text-align:left;padding:14px 18px;
+  background:var(--panel-2);
+  color:var(--text-faint);
+  font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+tbody td{
+  padding:14px 18px;
+  border-bottom:1px solid var(--border-soft);
+  color:var(--text-dim);
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:rgba(42,157,244,0.03);}
+tbody td.name{color:var(--text);font-weight:600;}
+.dot-sev{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;}
+.dot-sev.critica{background:var(--red);}
+.dot-sev.alta{background:var(--amber);}
+.dot-sev.media{background:var(--blue);}
+
+/* ---------- CHECKLIST ---------- */
+.checklist{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+.check-item{
+  background:var(--bg);
+  padding:22px 20px;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.check-num{
+  font-family:var(--mono);color:var(--green);font-size:13px;font-weight:700;
+  flex-shrink:0;
+}
+.check-item p{font-size:13.5px;color:var(--text-dim);}
+.check-item p b{color:var(--text);}
+
+/* ---------- FOOTER ---------- */
+footer{
+  border-top:1px solid var(--border-soft);
+  padding:44px 24px;
+  text-align:center;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--text-faint);
+  position:relative;z-index:1;
+}
+footer .foot-prompt{color:var(--green);}
+footer .foot-note{margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7;}
+
+/* ---------- MISC ---------- */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+.reveal.show{opacity:1;transform:translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand"><span class="dot"></span>arsenal@ciberseg</div>
+  <div class="nav-links">
+    <a href="#vectores">vectores</a>
+    <a href="#referencia">referencia</a>
+    <a href="#checklist">checklist</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="tb-dot r"></span><span class="tb-dot y"></span><span class="tb-dot g"></span>
+      <span class="tb-title">root@arsenal: ~</span>
+    </div>
+    <div class="terminal-body" id="term-body">
+      <div class="line"><span class="prompt">root@arsenal</span>:<span class="path">~</span>$ <span id="typed-line"></span><span class="cursor"></span></div>
+      <div id="term-output"></div>
+    </div>
+  </div>
+
+  <h1 class="hero-title">ATAQUE. DEFENSA. <span class="accent">CONTROL.</span></h1>
+  <p class="hero-sub">Una guía de referencia sobre los vectores de ataque más comunes en ciberseguridad y las contramedidas concretas para bloquearlos, con la misma mentalidad ofensiva-defensiva de un pentester.</p>
+  <div class="hero-tags">
+    <span class="tag red">◆ red team</span>
+    <span class="tag green">◆ blue team</span>
+    <span class="tag">8 vectores</span>
+    <span class="tag">fines educativos</span>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <span class="chevron">▾</span>
+  </div>
+</section>
+
+<section class="section" id="vectores">
+  <div class="section-head reveal">
+    <div class="eyebrow">vectores_de_ataque</div>
+    <h2 class="section-title">Conoce el ataque para construir la defensa</h2>
+    <p class="section-desc">Cada tarjeta muestra cómo opera la amenaza (lado rojo) y las contramedidas reales que la neutralizan (lado verde). Filtra por severidad o categoría.</p>
+  </div>
+
+  <div class="filter-bar reveal">
+    <button class="filter-btn active" data-filter="all">todos</button>
+    <button class="filter-btn" data-filter="critica">crítica</button>
+    <button class="filter-btn" data-filter="alta">alta</button>
+    <button class="filter-btn" data-filter="media">media</button>
+  </div>
+
+  <div class="attack-grid" id="grid"></div>
+</section>
+
+<section class="section" id="referencia">
+  <div class="section-head reveal">
+    <div class="eyebrow">tabla_rapida</div>
+    <h2 class="section-title">Referencia rápida</h2>
+    <p class="section-desc">Resumen de los ocho vectores, su capa de impacto principal y el control de primera línea recomendado.</p>
+  </div>
+  <div class="ref-wrap reveal">
+    <table>
+      <thead>
+        <tr><th>Vector</th><th>Severidad</th><th>Capa afectada</th><th>Control principal</th></tr>
+      </thead>
+      <tbody id="ref-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="checklist">
+  <div class="section-head reveal">
+    <div class="eyebrow">hardening_basico</div>
+    <h2 class="section-title">Checklist de higiene mínima</h2>
+    <p class="section-desc">Antes de pensar en herramientas avanzadas, estos son los controles que bloquean la mayoría de ataques oportunistas.</p>
+  </div>
+  <div class="checklist reveal">
+    <div class="check-item"><span class="check-num">01</span><p><b>MFA en todo.</b> Autenticación multifactor en correo, VPN y accesos administrativos.</p></div>
+    <div class="check-item"><span class="check-num">02</span><p><b>Parches al día.</b> Actualiza SO, dependencias y firmware con un calendario fijo.</p></div>
+    <div class="check-item"><span class="check-num">03</span><p><b>Principio de mínimo privilegio.</b> Nadie tiene más acceso del que su rol requiere.</p></div>
+    <div class="check-item"><span class="check-num">04</span><p><b>Copias de seguridad offline.</b> Backups probados, aislados de la red principal.</p></div>
+    <div class="check-item"><span class="check-num">05</span><p><b>Segmentación de red.</b> Separa sistemas críticos del resto del tráfico.</p></div>
+    <div class="check-item"><span class="check-num">06</span><p><b>Registro y monitoreo.</b> Logs centralizados con alertas ante anomalías.</p></div>
+    <div class="check-item"><span class="check-num">07</span><p><b>Formación continua.</b> El eslabón humano se entrena, no se asume.</p></div>
+    <div class="check-item"><span class="check-num">08</span><p><b>Plan de respuesta a incidentes.</b> Saber qué hacer en los primeros 60 minutos.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-prompt">root@arsenal:~$ echo "conocimiento defensivo, no ofensivo"</div>
+  <p class="foot-note">Contenido con fines educativos y de concienciación en ciberseguridad. Ninguna sección de este sitio proporciona código de explotación funcional. Usa este conocimiento para proteger sistemas, siempre con autorización explícita.</p>
+</footer>
+
+<script>
+// ---- Datos de ataques ----
+const attacks = [
+  {
+    id:'phishing', icon:'✉', title:'Phishing', sev:'alta', layer:'Humano / Correo',
+    attack:'Suplantación de identidad mediante correos, mensajes o sitios falsos que imitan una fuente confiable para robar credenciales o instalar malware.',
+    defense:['Filtrado de correo con análisis de reputación y adjuntos','Verificación de dominio y DKIM/SPF/DMARC','Simulacros de phishing y formación periódica','MFA para que una credencial robada no baste']
+  },
+  {
+    id:'sqli', icon:'⌁', title:'Inyección SQL', sev:'critica', layer:'Aplicación / BD',
+    attack:'Inserción de código malicioso en campos de entrada para manipular consultas a la base de datos y extraer, modificar o borrar información.',
+    defense:['Consultas parametrizadas (prepared statements)','Validación y saneamiento estricto de entradas','Principio de mínimo privilegio en el usuario de BD','WAF con reglas específicas contra inyección']
+  },
+  {
+    id:'xss', icon:'‹/›', title:'Cross-Site Scripting (XSS)', sev:'alta', layer:'Aplicación web',
+    attack:'Inyección de scripts en páginas vistas por otros usuarios, permitiendo robo de sesiones, cookies o redirección a sitios maliciosos.',
+    defense:['Escapado y codificación de salida por contexto','Content Security Policy (CSP) estricta','Cookies con flags HttpOnly y Secure','Sanitización de HTML generado por usuarios']
+  },
+  {
+    id:'mitm', icon:'⇄', title:'Man-in-the-Middle', sev:'alta', layer:'Red / Transporte',
+    attack:'Interceptación de la comunicación entre dos partes para leer, alterar o inyectar datos sin que ninguna lo note.',
+    defense:['TLS/HTTPS obligatorio con HSTS','Certificate pinning en apps móviles','VPN en redes no confiables','Evitar Wi-Fi públicas sin cifrado']
+  },
+  {
+    id:'ddos', icon:'▣', title:'Denegación de Servicio (DDoS)', sev:'alta', layer:'Red / Infraestructura',
+    attack:'Saturación de un servicio con tráfico masivo desde múltiples orígenes hasta dejarlo inaccesible para usuarios legítimos.',
+    defense:['Servicios anti-DDoS y CDN con absorción de tráfico','Rate limiting y filtrado por reputación de IP','Balanceo de carga y redundancia geográfica','Plan de escalado y respuesta ante picos']
+  },
+  {
+    id:'brute', icon:'⌘', title:'Fuerza bruta', sev:'media', layer:'Autenticación',
+    attack:'Prueba sistemática de combinaciones de credenciales, manual o automatizada, hasta acertar con un acceso válido.',
+    defense:['Bloqueo progresivo tras intentos fallidos','CAPTCHA en formularios de login','MFA obligatorio','Contraseñas largas y gestor de contraseñas']
+  },
+  {
+    id:'ransom', icon:'⛁', title:'Ransomware', sev:'critica', layer:'Endpoint / Datos',
+    attack:'Malware que cifra archivos o sistemas completos y exige un pago para restaurar el acceso, propagándose a menudo por la red interna.',
+    defense:['Backups offline probados regularmente','Segmentación de red para limitar propagación','EDR/antivirus con detección de comportamiento','Restricción de macros y ejecución de scripts']
+  },
+  {
+    id:'social', icon:'☍', title:'Ingeniería social', sev:'alta', layer:'Humano',
+    attack:'Manipulación psicológica de personas para que revelen información o realicen acciones que comprometan la seguridad, sin usar herramientas técnicas.',
+    defense:['Cultura de verificación ante solicitudes inusuales','Protocolos claros para cambios de datos sensibles','Formación en reconocimiento de manipulación','Canales secundarios de confirmación (callback)']
+  }
+];
+
+// ---- Render tarjetas ----
+const grid = document.getElementById('grid');
+function renderCards(filter='all'){
+  grid.innerHTML = '';
+  attacks.filter(a => filter==='all' || a.sev===filter).forEach(a=>{
+    const card = document.createElement('div');
+    card.className = 'attack-card reveal';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="card-title-wrap">
+          <div class="card-icon">${a.icon}</div>
+          <div class="card-title">${a.title}</div>
+        </div>
+        <div class="severity ${a.sev}">${a.sev}</div>
+      </div>
+      <div class="card-block">
+        <div class="block-label atk"><span class="bar"></span>ataque</div>
+        <div class="card-text">${a.attack}</div>
+      </div>
+      <div class="card-block">
+        <div class="block-label def"><span class="bar"></span>cómo bloquearlo</div>
+        <ul class="def-list">${a.defense.map(d=>`<li>${d}</li>`).join('')}</ul>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  observeReveals();
+}
+renderCards();
+
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(btn.dataset.filter);
+  });
+});
+
+// ---- Tabla de referencia ----
+const refBody = document.getElementById('ref-body');
+attacks.forEach(a=>{
+  const primary = a.defense[0];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="name">${a.title}</td>
+    <td><span class="dot-sev ${a.sev}"></span>${a.sev}</td>
+    <td>${a.layer}</td>
+    <td>${primary}</td>
+  `;
+  refBody.appendChild(tr);
+});
+
+// ---- Terminal typing effect ----
+const typedEl = document.getElementById('typed-line');
+const outputEl = document.getElementById('term-output');
+const cmd = 'scan --target=amenazas --mode=defensivo';
+const output = [
+  '[+] Cargando base de vectores de ataque conocidos...',
+  '[+] 8 vectores catalogados. Severidad media a crítica.',
+  '[+] Generando contramedidas recomendadas...',
+  '[✓] Listo. Desplázate para explorar.'
+];
+let i = 0;
+function typeCmd(){
+  if(i <= cmd.length){
+    typedEl.textContent = cmd.slice(0,i);
+    i++;
+    setTimeout(typeCmd, 38);
+  } else {
+    setTimeout(printOutput, 300);
+  }
+}
+let o = 0;
+function printOutput(){
+  if(o < output.length){
+    const div = document.createElement('div');
+    div.className = 'line out';
+    div.textContent = output[o];
+    outputEl.appendChild(div);
+    o++;
+    setTimeout(printOutput, 380);
+  }
+}
+typeCmd();
+
+// ---- Reveal on scroll ----
+function observeReveals(){
+  const els = document.querySelectorAll('.reveal:not(.show)');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('show');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.1});
+  els.forEach(el=>io.observe(el));
+}
+observeReveals();
+</script>
+
+</body>
+</html>
